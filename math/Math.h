@@ -10,12 +10,33 @@ namespace Ath::Math
     // BASIC FUNCTIONS
     // ============================================================
 
+    /**
+     * @brief Sign function with zero mapped to +1.
+     *
+     * Returns:
+     *  - +1 if val >= 0
+     *  - -1 if val < 0
+     *
+     * Implemented branchlessly via boolean-to-integer conversion.
+     */
     template <typename T> 
     static inline T sign(T val)
     {   auto cond = val >= T(0);
         return T(cond) - T(!cond);
     }
 
+    /**
+     * @brief Strict sign function with zero mapped to 0.
+     *
+     * Returns:
+     *  +1 if val > 0
+     *
+     *  0 if val == 0
+     *
+     *  -1 if val < 0
+     *
+     * Implemented without branches using two comparisons.
+     */
     template <typename T> 
     static inline T sign0(T val)
     {   auto condP = val > T(0);
@@ -23,18 +44,36 @@ namespace Ath::Math
         return T(condP) - T(condN);
     }
 
+    /**
+     * @brief Absolute value.
+     *
+     * Branch-based implementation.
+     */
     template <typename T>
     static inline T abs (T x)
     {
         return (x >= 0) ? x : -x;
     }
 
+    /**
+     * @brief Fast truncation toward zero.
+     *
+     * Equivalent to std::trunc for floating-point types,
+     * implemented via integer cast.
+     */
     template <typename T>
     static inline T trunc (T x)
     {
         return static_cast<int>(x);
     }
 
+    /**
+     * @brief Fractional part.
+     *
+     * Defined as x - trunc(x).
+     * For negative values, this follows truncation semantics
+     * (i.e. fractional part may be negative).
+     */
     template <typename T>
     static inline T frac (T x)
     {
@@ -53,6 +92,11 @@ namespace Ath::Math
         return a < b ? a : b;
     }
 
+    /**
+     * @brief Clamp x to the range [a, b].
+     *
+     * Implemented using min/max composition.
+     */
     template <typename T>
     static inline T clamp(T x, T a, T b)
     {
@@ -63,18 +107,27 @@ namespace Ath::Math
     // POWERS
     // ============================================================
 
+    // Returns t^2, inline.
     template<typename T>
     static inline T quad(T t) { return t * t; }
 
+    // Returns t^3, inline.
     template<typename T>
     static inline T cube(T t) { return t * t * t; }
 
+    // Returns t^4, inline.
     template<typename T>
     static inline T quart(T t) { return t * t * t * t; }
 
+    // Returns t^5, inline.
     template<typename T>
     static inline T quint(T t) { return t * t * t * t * t; }
 
+    /**
+     * @brief Inverted quadratic easing.
+     *
+     * Computes: 1 - (1 - t)^2
+     */
     template<typename T>
     static inline T quadInv(T t)
     {
@@ -82,6 +135,11 @@ namespace Ath::Math
         return T(1.0f) - quad(x1);
     }
 
+    /**
+     * @brief Inverted cubic easing.
+     *
+     * Computes: 1 - (1 - t)^3
+     */
     template<typename T>
     static inline T cubeInv(T t)
     {
@@ -89,6 +147,11 @@ namespace Ath::Math
         return T(1.0f) - cube(x1);
     }
 
+    /**
+     * @brief Inverted quartic easing.
+     *
+     * Computes: 1 - (1 - t)^4
+     */
     template<typename T>
     static inline T quartInv(T t)
     {
@@ -96,6 +159,11 @@ namespace Ath::Math
         return T(1.0f) - quart(x1);
     }
 
+    /**
+     * @brief Inverted quintic easing.
+     *
+     * Computes: 1 - (1 - t)^5
+     */
     template<typename T>
     static inline T quintInv(T t)
     {
@@ -103,6 +171,14 @@ namespace Ath::Math
         return T(1.0f) - quint(x1);
     }
 
+    /**
+     * @brief Integer power with runtime exponent.
+     *
+     * Uses exponentiation by squaring.
+     * Supports negative exponents via reciprocal.
+     *
+     * constexpr allows compile-time evaluation when inputs are constant.
+     */
     template <typename T>
     constexpr T ipow(T a, int n) 
     {
@@ -118,6 +194,11 @@ namespace Ath::Math
         return a * ipow(a, n - 1);
     }
 
+    /**
+     * @brief Integer power with compile-time exponent.
+     *
+     * Fully unrolled at compile time when possible.
+     */
     template <typename T, int N>
     constexpr T ipow(T a) 
     {
@@ -133,6 +214,11 @@ namespace Ath::Math
         return a * ipow(a, N - 1);
     }
 
+    /**
+     * @brief Inverted integer-power easing.
+     *
+     * Computes: 1 - (1 - t)^N
+     */
     template<typename T, int N>
     static inline T ipowInv(T t)
     {
@@ -144,6 +230,11 @@ namespace Ath::Math
     // INTERPOLATION
     // ============================================================
 
+    /**
+     * @brief Logarithmic interpolation in base 2.
+     *
+     * Interpolates exponentially between a and b.
+     */
     template <typename T>
     T logerp2 (T a, T b, T x)
     {
@@ -151,6 +242,11 @@ namespace Ath::Math
         return a * std::pow(T(2), log * x);
     }
 
+    /**
+     * @brief Logarithmic interpolation in base 10.
+     *
+     * Interpolates exponentially between a and b.
+     */
     template <typename T>
     T logerp10 (T a, T b, T x)
     {
@@ -162,6 +258,7 @@ namespace Ath::Math
     // TRIGONOMETRY
     // ============================================================
 
+    // Mathematical constants
     template <typename T> static constexpr T pi = std::numbers::pi_v<T>;
     template <typename T> static constexpr T tau = pi<T> * T(2.0);
 
@@ -174,6 +271,12 @@ namespace Ath::Math
     static constexpr float finvPi = invPi<float>;
     static constexpr float finvTau = invTau<float>;
 
+    /**
+     * @brief Fold a normalized phase into [-0.5, 0.5].
+     *
+     * This performs range reduction for
+     * polynomial approximations of sin(2πx).
+     */
     template <typename T>
     static inline T foldArgument(T x)
     {
@@ -183,6 +286,11 @@ namespace Ath::Math
         return max(min(x, half - x), -half - x);
     }
 
+    /**
+     * @brief Parabolic sine approximation for sin(2πx).
+     *
+     * Approximates sin(2πx) with quadratic curves.
+     */
     template <typename T>
     static inline T sin2piParabola(T x) noexcept
     {
@@ -194,7 +302,11 @@ namespace Ath::Math
     }
 
     /**
-        * @brief Sin(2πx). Expects 0...1 input. With 32-bit floats max. measured abs error is 6.78301e-05 (-80 dB). It's more precise than Juce' pade approximation
+        * @brief Sin(2πx). Expects 0...1 input.
+        *
+        * 5th-order odd polynomial approximation.
+        * Max measured absolute error: ~6.78e-05 (~ -80 dB).
+        * More accurate than JUCE's Pade approximation.
         */
     template <typename T>
     static inline T sin2pi5(T x) noexcept
@@ -210,7 +322,10 @@ namespace Ath::Math
     }
 
     /**
-        * @brief Sin(2πx). Expects 0...1 input. With 32-bit floats max. measured abs error is 8.34465e-07 (-121 dB).
+        * @brief Sin(2πx). Expects 0...1 input.
+        *
+        * 7th-order odd polynomial.
+        * Max measured abs error: ~8.34e-07 (~ -121 dB).
         */
     template <typename T>
     static inline T sin2pi7(T x) noexcept
@@ -224,11 +339,13 @@ namespace Ath::Math
         const T d = -70.9934332720751750562132689396061123;
 
         return x1 * (a + x2 * (b + x2 * (c + d * x2)));
-        
     }
 
     /**
-        * @brief Sin(2πx). Expects 0...1 input. With 32-bit float max. measured abs error is 3.72529e-07 (-128 dB).
+        * @brief Sin(2πx). Expects 0...1 input.
+        *
+        * 9th-order odd polynomial.
+        * Max measured abs error: ~3.73e-07 (~ -128 dB).
         */
     template <typename T>
     static inline T sin2pi9(T x) noexcept
@@ -245,21 +362,28 @@ namespace Ath::Math
         return x1 * (a + x2 * (b + x2 * (c + x2 * (d + x2 * e))));
     }
 
+    /**
+     * @brief Dirichlet kernel approximation.
+     *
+     * Used in Fourier analysis and band-limited synthesis.
+     * Includes a small-x safeguard to avoid numerical blow-up.
+     */
     template <typename T>
     static inline T dirichlet(T x, int n) noexcept
     {
         const auto x1 = foldArgument(x);
 
         const auto cos = sin2pi9(x1 + 0.25);
-        const auto cos2 = cos * cos;
 
-        if (abs(x1) < 0.01) return 1;
+        if (abs(x1) < 0.01) return cos;
 
         return sin2pi9(x1 * n) / (x * T(n) * pi<T>);
     }
 
     /**
         * @brief Fast tan over -pi/2 ... +pi/2 range
+        *
+        * Rational polynomial approximation (Pade).
         */
     template <typename T>
     static inline T fastTan(T x) noexcept
@@ -278,28 +402,34 @@ namespace Ath::Math
         return numerator / denominator;
     }
 
-
+    /**
+     * @brief Chebyshev polynomial T_2(x).
+     *
+     * Explicit form: 2x^2 − 1
+     */
     template <typename T>
     static inline T chebyshev2(T x) noexcept
     {
-        // 2x^2 - 1
-
         return x * x * 2.0 - 1.0;
     }
 
+    /**
+     * @brief Chebyshev polynomial T_3(x).
+     *
+     * Explicit form: 4x^2 − 3x
+     */
     template <typename T>
     static inline T chebyshev3(T x) noexcept
     {
-        // 4x^3 - 3x
-
         return x * x * x * 4.0 - x * 3.0;
     }
 
+    /**
+     * @brief Chebyshev polynomial T_5(x).
+     */
     template <typename T>
     static inline T chebyshev5(T x) noexcept
     {
-        // 16x^5 - 20x^3 + 5x
-
         const T x2 = x * x;
         const T x3 = x2 * x;
         const T x5 = x3 * x2;
@@ -307,11 +437,12 @@ namespace Ath::Math
         return x5 * 16.0 - x3 * 20 + x * 5;
     }
 
+    /**
+     * @brief Chebyshev polynomial T_7(x).
+     */
     template <typename T>
     static inline T chebyshev7(T x) noexcept
     {
-        // 64x^7 - 112x^5 + 56x^3 - 7x
-
         const T x2 = x * x;
         const T x3 = x2 * x;
         const T x5 = x3 * x2;
@@ -320,6 +451,11 @@ namespace Ath::Math
         return x7 * 64.0 - x5 * 112.0 + x3 * 56.0 - x * 7.0;
     }
 
+    /**
+     * @brief Chebyshev recurrence relation.
+     *
+     * T_{n + 1}(x) = 2xT_n(x) − T_{n - 1}(x)
+     */
     template <typename T>
     static inline T chebyshev_nplus1(T x, T t_n, T t_nminus1) noexcept
     {
@@ -334,6 +470,9 @@ namespace Ath::Math
     static constexpr int C2_MIDI_NOTE_NUMBER = C1_MIDI_NOTE_NUMBER + 12;
     static constexpr int A4_MIDI_NOTE_NUMBER = 69;
 
+    /**
+     * @brief MIDI note number to frequency.
+     */
     template <typename T>
     T noteToFrequency (int p, T referenceFrequency = T(440))
     {
@@ -341,6 +480,9 @@ namespace Ath::Math
              * std::pow(T(2), T(p - A4_MIDI_NOTE_NUMBER) / T(12));
     }
 
+    /**
+     * @brief MIDI note number to frequency.
+     */
     template <typename T>
     T noteToFrequency (T p, T referenceFrequency = T(440))
     {
@@ -348,6 +490,9 @@ namespace Ath::Math
              * std::pow(T(2), (p - T(A4_MIDI_NOTE_NUMBER)) / T(12));
     }
 
+    /**
+     * @brief Frequency to MIDI note number.
+     */
     template <typename T>
     T frequencyToNote (T freq, T referenceFrequency = T(440))
     {
@@ -365,6 +510,11 @@ namespace Ath::Math
     // dB CONSTANTS
     // ============================================================
 
+    /**
+     * @brief Integer dB to linear amplitude.
+     *
+     * Uses base = 10^(1/20), raised via integer power.
+     */
     constexpr float dB(int dB)
     {
         constexpr float base = 1.1220184543019633; // 10^(1/20)
@@ -430,6 +580,12 @@ namespace Ath::Math
         return std::pow(T(10), db / T(10));
     }
 
+    /**
+     * @brief Linear slider mapped to logarithmic amplitude.
+     *
+     * x ∈ [0, 1], interpolated between dB_at0 and 0 dB,
+     * then converted to linear amplitude.
+     */
     template <typename T>
     T linearVolumeToLog (T x, T dB_at0)
     {
