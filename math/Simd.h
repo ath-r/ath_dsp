@@ -143,8 +143,8 @@ namespace Simd
         forceinline int4 SIMD_VECTORCALL operator<(float4 rhs) const {return _mm_cmplt_ps(vec, rhs.vec);}
         forceinline int4 SIMD_VECTORCALL operator>=(float4 rhs) const {return _mm_cmpge_ps(vec, rhs.vec);}
         forceinline int4 SIMD_VECTORCALL operator<=(float4 rhs) const {return _mm_cmple_ps(vec, rhs.vec);}
-        forceinline int4 SIMD_VECTORCALL operator==(float4 rhs) const noexcept {_mm_cmpeq_ps(vec, rhs.vec);}
-        forceinline int4 SIMD_VECTORCALL operator!=(float4 rhs) const noexcept {_mm_cmpneq_ps(vec, rhs.vec);}
+        forceinline int4 SIMD_VECTORCALL operator==(float4 rhs) const noexcept {return _mm_cmpeq_ps(vec, rhs.vec);}
+        forceinline int4 SIMD_VECTORCALL operator!=(float4 rhs) const noexcept {return _mm_cmpneq_ps(vec, rhs.vec);}
 
         forceinline explicit float4(const int4& v) noexcept: vec(_mm_castsi128_ps(v.vec)) {}
         forceinline explicit operator int4() const noexcept {return _mm_castps_si128(vec);}

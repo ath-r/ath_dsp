@@ -39,7 +39,7 @@ namespace Ath::Math
     static inline T frac (T x)
     {
         return x - static_cast<int>(x);
-    };
+    }
 
     template <typename T>
     static inline T max(T a, T b)
