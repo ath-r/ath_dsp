@@ -1,0 +1,43 @@
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+**/.DS_Store
+
+# It's nice to have the Builds folder exist, to remind us where it is
+Builds/*
+!Builds/.gitkeep
+build/
+
+FORMA_artefacts/
+*.vcxproj
+*.vcxproj.filters
+*.sln
+
+# This should never exist
+Install/*
+
+# Running CTest makes a bunch o junk
+Testing
+
+# IDE config
+.idea
+.vscode
+
+.venv
+
+# clion cmake builds
+cmake-build-debug
+cmake-build-release
+cmake-build-relwithdebinfo
+packaging/Output/*
+Tests-b12d07c_include.cmake
+CPM_modules/FindCatch2.cmake
+Benchmarks-b12d07c_include.cmake
+FORMA_artefacts/JuceLibraryCode/Info.txt
