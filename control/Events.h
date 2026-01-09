@@ -1,26 +1,43 @@
 #pragma once
+
 #include <vector>
 #include <functional>
+#include <utility>
+#include <type_traits>
 
 namespace Ath::Control
 {
-    #define MEMBER_FUNCTION(instance, method) std::bind(method, std::ref(instance), std::placeholders::_1) 
-
-    #define addMemberCallback(instance, method) addCallback(MEMBER_FUNCTION(instance, method))
-
     template <typename T>
     class EventOutput
-    {   
-        typedef std::function<void(T)> callbackType;
+    {
+        using callbackType = std::function<void(const T&)>;
 
         std::vector<callbackType> callbacks;
 
-        public:
-            void fire(const T value) 
-            {
-                for(callbackType callback : callbacks)    callback(value);
-            }
+    public:
 
-            void addCallback(callbackType callback) { callbacks.push_back(callback); }
+        void fire(const T& value) const
+        {
+            for (const auto& callback : callbacks) callback(value);
+        }
+
+        template <typename F>
+        void addCallback(F&& f)
+        {
+            static_assert(
+                std::is_invocable_v<F, const T&>,
+                "Callback must be callable with (const T&)"
+            );
+
+            callbacks.emplace_back(std::forward<F>(f));
+        }
+
+        template <typename InstanceType, typename MemberFunction>
+        void addMemberCallback(InstanceType& instance, MemberFunction member_function)
+        {
+            addCallback([&instance, member_function](const T& v) {
+                std::invoke(member_function, instance, v);
+            });
+        }
     };
 }
