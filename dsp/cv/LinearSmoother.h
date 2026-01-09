@@ -6,8 +6,10 @@
 namespace Ath::Dsp::Cv
 {
     template <typename T>
-    class LinearSmoother
+    class ConstantRateLinearSmoother
     {
+    protected:
+
         Context c = Context(48000.0f);
         T targetValue = 0.0;
         T currentValue = 0.0;
@@ -16,7 +18,6 @@ namespace Ath::Dsp::Cv
         T delta = 0.0;
 
     public:
-
         void reset()
         {
             currentValue = 0.0f;
@@ -46,7 +47,7 @@ namespace Ath::Dsp::Cv
             return currentValue;
         }
 
-        virtual inline T process()
+        virtual T process()
         {
             auto diff = targetValue - currentValue;
             diff = Math::clamp(diff, -delta, delta);
@@ -59,6 +60,32 @@ namespace Ath::Dsp::Cv
         {
             setTargetValue(value);
             return process();
+        }
+    };
+
+    template <typename T>
+    class ConstantTimeLinearSmoother : public ConstantRateLinearSmoother<T>
+    {
+    private:
+        using Base = ConstantRateLinearSmoother<T>;
+        
+        void calculateDelta()
+        {
+            auto diff = Math::abs(Base::targetValue - Base::currentValue);
+            Base::delta = Base::c.T / Base::time * diff;
+        }
+
+    public:
+        void setTime(T newTime) override
+        {
+            Base::time = newTime;
+            calculateDelta();
+        }
+
+        void setTargetValue(T value) override
+        {
+            Base::targetValue = value;
+            calculateDelta();
         }
     };
 }
