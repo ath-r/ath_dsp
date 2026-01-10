@@ -231,6 +231,17 @@ namespace Ath::Math
     // ============================================================
 
     /**
+     * @brief Linear interpolation
+     *
+     * Interpolates linearly between a and b.
+     */
+    template <typename T>
+    static inline T lerp(T a, T b, T t)
+    {
+        return a + (b - a) * t;
+    }
+
+    /**
      * @brief Logarithmic interpolation in base 2.
      *
      * Interpolates exponentially between a and b.
