@@ -1,0 +1,5 @@
+_deps/
+.cache/
+ath_dsp_build/
+CMakeFiles/
+ath_dsp_tests

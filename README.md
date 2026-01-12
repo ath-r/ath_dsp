@@ -43,8 +43,8 @@ This library contains classes and routines for audio synthesis and signal proces
   * [Complex.h](./math/Complex.h)
     * Simple complex number template that works with both scalars and SIMD vectors.
   * [Math.h](./math/Math.h)
-    * Basic math: `sign, abs, trunc, frac, max, min, clamp`
-    * Powers of $x$ and their inverted easings, integer exponentiation
+    * Basic math: `sign`, `abs`, `trunc`, `frac`, `max`, `min`, `clamp`
+    * Powers of `x` and their inverted easings, integer exponentiation
     * Linear interpolation, logarithmic interpolation in bases 2 and 10
     * Trigonometric function approximations, sinc, Dirichlet kernel, Chebyshev polynomials
     * Routines to convert between MIDI note numbers, Hz, and semitones; linear amplitude and dBs
@@ -55,4 +55,4 @@ This library contains classes and routines for audio synthesis and signal proces
     * Linear Congruential Generator (default parameters give periodicity $2^{32}$)
     * MT19937 Mersenne Twister ($2^{19937} − 1$ periodicity)
   * [Simd.h](./math/Simd.h)
-    * SIMD classes for AVX2 instruction set. Includes `int4, int8, float4, float8` and companion mathematical routines.
+    * SIMD classes for AVX2 instruction set. Includes `int4`, `int8`, `float4`, `float8` and companion mathematical routines.

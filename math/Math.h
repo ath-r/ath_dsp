@@ -283,10 +283,51 @@ namespace Ath::Math
     static constexpr float finvTau = invTau<float>;
 
     /**
+     * @brief Pade approximation of sin for [-pi, pi] input x.
+     */
+    template <typename T>
+    static T sin (T x) noexcept
+    {
+        auto x2 = x * x;
+        auto numerator = x * (24019.5385697205 + x2 * (-3423.34761261891 + x2 * (110.14197630042 - x2)));
+        auto denominator = 24019.5385697205 + x2 * (579.908815667847 + x2 * (6.63062416405668 + x2 * 0.0383120256901944));
+        return numerator / denominator;
+    }
+
+    /**
+     * @brief Pade approximation of sin(2pi * x) for [-0.5, 0.5] input x.
+     */
+    template <typename T>
+    static T sin2pi (T x) noexcept
+    {
+        auto x2 = x * x;
+        auto numerator = x * (0.390378103540111 + x2 * (-2.19650161517261 + x2 * (2.78992885186622 - x2)));
+        auto denominator = 0.0621306048532483 + x2 * (0.0592189045039231 + x2 * (0.0267309754425848 + x2 * 0.00609754826845813));
+        return numerator / denominator;
+    }
+
+    /**
+     * @brief Pade approximation of tan on [-pi/2, pi] range.
+     */
+    template <typename T>
+    static inline T fastTan(T x) noexcept
+    {
+        const T x2 = x * x;
+
+        const T a = -135135.0;
+        const T b = 17325.0;
+        const T c = -378.0;
+        const T d = 62370.0;
+        const T e = -3150.0;
+        const T f = 28.0;
+
+        const T numerator = x * (a + x2 * (b + x2 * (c + x2)));
+        const T denominator = a + x2 * (d + x2 * (e + f * x2));
+        return numerator / denominator;
+    }
+
+    /**
      * @brief Fold a normalized phase into [-0.5, 0.5].
-     *
-     * This performs range reduction for
-     * polynomial approximations of sin(2πx).
      */
     template <typename T>
     static inline T foldArgument(T x)
@@ -374,46 +415,6 @@ namespace Ath::Math
     }
 
     /**
-     * @brief Dirichlet kernel approximation.
-     *
-     * Used in Fourier analysis and band-limited synthesis.
-     * Includes a small-x safeguard to avoid numerical blow-up.
-     */
-    template <typename T>
-    static inline T dirichlet(T x, int n) noexcept
-    {
-        const auto x1 = foldArgument(x);
-
-        const auto cos = sin2pi9(x1 + 0.25);
-
-        if (abs(x1) < 0.01) return cos;
-
-        return sin2pi9(x1 * n) / (x * T(n) * pi<T>);
-    }
-
-    /**
-        * @brief Fast tan over -pi/2 ... +pi/2 range
-        *
-        * Rational polynomial approximation (Pade).
-        */
-    template <typename T>
-    static inline T fastTan(T x) noexcept
-    {
-        const T x2 = x * x;
-
-        const T a = -135135.0;
-        const T b = 17325.0;
-        const T c = -378.0;
-        const T d = 62370.0;
-        const T e = -3150.0;
-        const T f = 28.0;
-
-        const T numerator = x * (a + x2 * (b + x2 * (c + x2)));
-        const T denominator = a + x2 * (d + x2 * (e + f * x2));
-        return numerator / denominator;
-    }
-
-    /**
      * @brief Chebyshev polynomial T_2(x).
      *
      * Explicit form: 2x^2 − 1
@@ -427,7 +428,7 @@ namespace Ath::Math
     /**
      * @brief Chebyshev polynomial T_3(x).
      *
-     * Explicit form: 4x^2 − 3x
+     * Explicit form: 4x^3 − 3x
      */
     template <typename T>
     static inline T chebyshev3(T x) noexcept
