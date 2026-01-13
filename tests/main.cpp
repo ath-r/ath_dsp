@@ -11,6 +11,7 @@
 #include "matplot/freestanding/axes_functions.h"
 
 #include "../math/Math.h"
+#include "../math/Special.h"
 
 static volatile double sink = 0.0; // prevents optimization
 
@@ -33,19 +34,29 @@ int main(int argc, char *argv[])
         std::vector<double> y1_error;
         for (auto [x, y] : std::views::zip(x1, y1)) y1_error.push_back((y - std::sin(x)) * 1e4);
 
-        auto x2 = matplot::linspace(-0.5, 0.5, 100);
         std::vector<double> y2;
-        for (auto& x : x2) y2.push_back(Ath::Math::sin2pi(x));
+        for (auto& x : x1) y2.push_back(Ath::Math::sin9(x));
+
+        std::vector<double> y2_error;
+        for (auto [x, y] : std::views::zip(x1, y2)) y2_error.push_back((y - std::sin(x)) * 1e12);
+
+        auto x2 = matplot::linspace(-0.5, 0.5, 600);
+        std::vector<double> y3;
+        for (auto& x : x2) y3.push_back(Ath::Math::sin2pi9(x));
 
         matplot::hold(matplot::on);
         plot(x1, y1,       "Math::sin(x)");
         plot(x1, y1_error, "Error * 1e4");
-        plot(x2, y2,       "Math::sin2pi(x)");
+
+        plot(x1, y2,       "Math::sin9(x)");
+        plot(x1, y2_error, "Error * 1e12");
+
+        plot(x2, y3,       "Math::sin2pi9(x)");
 
         auto lg = matplot::legend();
         lg->location(matplot::legend::general_alignment::bottomright);
 
-        matplot::title("Pade approximations of sin");    
+        matplot::title("Rational approximations of sin");    
         matplot::save("plot0sinpade.png");
     }
 
@@ -68,12 +79,6 @@ int main(int argc, char *argv[])
         std::vector<double> y2_error;
         for (auto [x, y] : std::views::zip(x1, y2)) y2_error.push_back((y - std::sin(Ath::Math::tau<double> * x)) * 1e6);
 
-        std::vector<double> y3;
-        for (auto& x : x1) y3.push_back(Ath::Math::sin2pi9(x));
-
-        std::vector<double> y3_error;
-        for (auto [x, y] : std::views::zip(x1, y3)) y3_error.push_back((y - std::sin(Ath::Math::tau<double> * x)) * 1e8);
-
         matplot::figure();
         matplot::hold(matplot::on);
 
@@ -82,8 +87,6 @@ int main(int argc, char *argv[])
         plot(x1, y1_error, "Error * 1e4");
         plot(x1, y2, "Math::sin2pi7(x)");
         plot(x1, y2_error, "Error * 1e6");
-        plot(x1, y3, "Math::sin2pi9(x)");
-        plot(x1, y3_error, "Error * 1e8");
 
         auto lg = matplot::legend();
         lg->location(matplot::legend::general_alignment::bottomright);
@@ -130,6 +133,35 @@ int main(int argc, char *argv[])
 
         matplot::title("Execution time of 1e8 calls to sine, ms");    
         matplot::save("plot2sinbench.png");
+    }
+
+    // math/Special.h
+    {
+        auto x1 = matplot::linspace(-1, 1, 1000);
+        std::vector<double> y1;
+        for (auto& x : x1) y1.push_back(Ath::Math::lanczos1(x));
+
+        auto x2 = matplot::linspace(-2, 2, 1000);
+        std::vector<double> y2;
+        for (auto& x : x2) y2.push_back(Ath::Math::lanczos2(x));
+
+        auto x3 = matplot::linspace(-3, 3, 1000);
+        std::vector<double> y3;
+        for (auto& x : x3) y3.push_back(Ath::Math::lanczos3(x));
+
+        matplot::figure();
+        matplot::hold(matplot::on);
+
+        plot(x1, y1, "Math::lanczos1");
+        plot(x2, y2, "Math::lanczos2");
+        plot(x3, y3, "Math::lanczos3");
+
+        auto lg = matplot::legend();
+        lg->location(matplot::legend::general_alignment::bottomright);
+
+        matplot::grid(matplot::on);
+        matplot::title("Lanczos kernels");    
+        matplot::save("plot3lanczos.png");
     }
 
     return 0;

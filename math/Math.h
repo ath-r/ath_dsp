@@ -288,14 +288,23 @@ namespace Ath::Math
     template <typename T>
     static T sin (T x) noexcept
     {
+        T p1 = 24019.5385697205;
+        T p3 = -3423.34761261891;
+        T p5 = 110.14197630042;
+
+        T q0 = 24019.5385697205;
+        T q2 = 579.908815667847;
+        T q4 = 6.63062416405668;
+        T q6 = 0.0383120256901944;
+
         auto x2 = x * x;
-        auto numerator = x * (24019.5385697205 + x2 * (-3423.34761261891 + x2 * (110.14197630042 - x2)));
-        auto denominator = 24019.5385697205 + x2 * (579.908815667847 + x2 * (6.63062416405668 + x2 * 0.0383120256901944));
+        auto numerator = x * (p1 + x2 * (p3 + x2 * (p5 - x2)));
+        auto denominator = q0 + x2 * (q2 + x2 * (q4 + x2 * q6));
         return numerator / denominator;
     }
 
     /**
-     * @brief Pade approximation of sin(2pi * x) for [-0.5, 0.5] input x.
+     * @brief Rational approximation of sin(2pi * x) for [-0.5, 0.5] input x.
      */
     template <typename T>
     static T sin2pi (T x) noexcept
@@ -304,6 +313,80 @@ namespace Ath::Math
         auto numerator = x * (0.390378103540111 + x2 * (-2.19650161517261 + x2 * (2.78992885186622 - x2)));
         auto denominator = 0.0621306048532483 + x2 * (0.0592189045039231 + x2 * (0.0267309754425848 + x2 * 0.00609754826845813));
         return numerator / denominator;
+    }
+
+    /**
+     * @brief Rational approximation of sin(2pi * x) for [0.0, 1.0] input x.
+     */
+    template <typename T>
+    static T sin2pi01 (T x) noexcept
+    {
+        x -= 0.5;
+        auto x2 = x * x;
+        auto numerator = x * (0.390378103540111 + x2 * (-2.19650161517261 + x2 * (2.78992885186622 - x2)));
+        auto denominator = 0.0621306048532483 + x2 * (0.0592189045039231 + x2 * (0.0267309754425848 + x2 * 0.00609754826845813));
+        return -numerator / denominator;
+    }
+
+    template <typename T>
+    static T sin9 (T x) noexcept
+    {
+        T p1 = 3588316.43293775385245680809;
+        T p3 = -528360.77420690737199038267;
+        T p5 = 18957.81813070576390600763;
+        T p7 = -238.98435213716663838568;
+
+        T q0 = 3588316.43293829867616295815;
+        T q2 = 69691.96461030155478511006;
+        T q4 = 670.50863659986623588338;
+        T q6 = 3.96825138090984630423;
+        T q8 = 0.01314065665343438528;
+
+        auto x2 = x * x;
+        auto numerator = x * (p1 + x2 * (p3 + x2 * (p5 + x2 * (p7 + x2))));
+        auto denominator = q0 + x2 * (q2 + x2 * (q4 + x2 * (q6 + x2 * q8)));
+        return numerator / denominator;
+    }
+
+    template <typename T>
+    static T sin2pi9 (T x) noexcept
+    {
+        T p1 = 1.47724432246904480159;
+        T p3 = -8.58720584584061974454;
+        T p5 = 12.16380129137498933289;
+        T p7 = -6.05354827006795037647;
+
+        T q0 = 0.23511073607542215536;
+        T q2 = 0.18027037928061467875;
+        T q4 = 0.06847091023266492493;
+        T q6 = 3.96825138090984630423;
+        T q8 = 0.00209141397521427812;
+
+        auto x2 = x * x;
+        auto numerator = x * (p1 + x2 * (p3 + x2 * (p5 + x2 * (p7 + x2))));
+        auto denominator = q0 + x2 * (q2 + x2 * (q4 + x2 * (q6 + x2 * q8)));
+        return numerator / denominator;
+    }
+
+    template <typename T>
+    static T sin2pi9_01 (T x) noexcept
+    {
+        T p1 = 1.47724432246904480159;
+        T p3 = -8.58720584584061974454;
+        T p5 = 12.16380129137498933289;
+        T p7 = -6.05354827006795037647;
+
+        T q0 = 0.23511073607542215536;
+        T q2 = 0.18027037928061467875;
+        T q4 = 0.06847091023266492493;
+        T q6 = 3.96825138090984630423;
+        T q8 = 0.00209141397521427812;
+
+        x -= 0.5;
+        auto x2 = x * x;
+        auto numerator = x * (p1 + x2 * (p3 + x2 * (p5 + x2 * (p7 + x2))));
+        auto denominator = q0 + x2 * (q2 + x2 * (q4 + x2 * (q6 + x2 * q8)));
+        return -numerator / denominator;
     }
 
     /**
@@ -391,27 +474,6 @@ namespace Ath::Math
         const T d = -70.9934332720751750562132689396061123;
 
         return x1 * (a + x2 * (b + x2 * (c + d * x2)));
-    }
-
-    /**
-        * @brief Sin(2πx). Expects 0...1 input.
-        *
-        * 9th-order odd polynomial.
-        * Max measured abs error: ~3.73e-07 (~ -128 dB).
-        */
-    template <typename T>
-    static inline T sin2pi9(T x) noexcept
-    {
-        const auto x1 = foldArgument(x);
-        const auto x2 = x1 * x1;
-
-        const T a = 6.28318516008947744301885339855754539;
-        const T b = -41.3416550314162780771649724741397745;
-        const T c = 81.6010040732617735242889484141942461;
-        const T d = -76.5497822935957426856648840708956891;
-        const T e = 39.5367060657302079906898367421553316;
-
-        return x1 * (a + x2 * (b + x2 * (c + x2 * (d + x2 * e))));
     }
 
     /**

@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(ath_dsp_tests LANGUAGES CXX)
 
+add_compile_options(-mavx2 -mfma -O3)
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

@@ -19,8 +19,40 @@ namespace Ath::Math
         return sin2pi9(x1 * n) / (x * T(n) * pi<T>);
     }
 
+     /**
+     * @brief Lanczos kernel with a=1
+     * 
+     */
+    template <typename T>
+    static T lanczos1(T x) noexcept
+    {
+        const auto pix = x * pi<T>;
+
+        const auto sinx = sin(pix);
+
+        return (sinx * sinx) / (pix * pix);
+    }
+
     /**
-     * @brief Laтczos kernel with a=3
+     * @brief Lanczos kernel with a=2
+     * 
+     */
+    template <typename T>
+    static T lanczos2(T x) noexcept
+    {
+        static const T a = 2.0;
+        static const T ainv = 1.0 / a;
+
+        const auto pix = x * pi<T>;
+
+        const auto sina = sin(pix * ainv);
+        const auto sinx = sin(pix);
+
+        return (a * sinx * sina) / (pix * pix);
+    }
+
+    /**
+     * @brief Lanczos kernel with a=3
      * 
      */
     template <typename T>
@@ -32,7 +64,7 @@ namespace Ath::Math
         const auto pix = x * pi<T>;
 
         const auto sina = sin(pix * ainv);
-        const auto sin = chebyshev3(sina);
+        const auto sin = -chebyshev3(sina);
 
         return (a * sin * sina) / (pix * pix);
     }
