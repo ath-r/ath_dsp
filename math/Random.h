@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <random>
 
 #include "Polynomial.h"
@@ -23,7 +24,11 @@ namespace Ath::Math::Random
 
         virtual int getInt() = 0;
 
+        virtual long long getLong() = 0;
+
         float getFloat();
+
+        double getDouble();
 
         float getFloatBipolar();
 
@@ -39,25 +44,50 @@ namespace Ath::Math::Random
      */
     class LinearCongruentialGenerator : public RandomNumberGeneratorBase
     {
-        int seed = 0;
+        uint32_t seed = 0;
+        uint32_t seed1 = 0;
 
     public:
-        int a = 1664525;
-        int c = 1013904223;
+        uint32_t a = 1664525;
+        uint32_t c = 1013904223;
     
         void setSeed(int newSeed);
         int getInt() override;
+        long long getLong() override;
     };
 
     /**
-     * @brief MT19937 Mersenne Twister with periodicity of 2^19937 − 1
+     * @brief 64-bit linear congruential generator.
+     *
+     * https://nuclear.llnl.gov/CNP/rng/rngman/node4.html
+     * With default parameters, periodicity is 2^64
+     */
+    class LinearCongruentialGenerator64 : public RandomNumberGeneratorBase
+    {
+        uint64_t seed = 0;
+
+    public:
+        uint64_t a = 2862933555777941757ULL;
+        uint64_t c = 3037000493ULL;
+
+        void setSeed(uint64_t newSeed);
+        int getInt() override;
+        long long getLong() override;
+    };
+
+    using Lcg32 = LinearCongruentialGenerator;
+    using Lcg64 = LinearCongruentialGenerator64;
+
+    /**
+     * @brief MT19937-64 Mersenne Twister with periodicity of 2^19937 − 1
      */
     class MersenneTwister : public RandomNumberGeneratorBase
     {
-        std::mt19937 rng = std::mt19937();
+        std::mt19937_64 rng = std::mt19937_64();
 
     public:
         void setSeed (int newSeed);
         int getInt() override;
+        long long getLong() override;
     };
 }
