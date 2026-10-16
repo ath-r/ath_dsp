@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <numbers>
 
 namespace Ath::Math
 {
@@ -270,7 +269,7 @@ namespace Ath::Math
     // ============================================================
 
     // Mathematical constants
-    template <typename T> static constexpr T pi = std::numbers::pi_v<T>;
+    template <typename T> static constexpr T pi = static_cast<T>(3.141592653589793238462643383279502884L);
     template <typename T> static constexpr T tau = pi<T> * T(2.0);
 
     template <typename T> static constexpr T invPi = T(1.0) / pi<T>;
@@ -663,7 +662,7 @@ namespace Ath::Math
     template <typename T>
     T linearVolumeToLog (T x, T dB_at0)
     {
-        const T dB = std::lerp(dB_at0, T(0), x);
+        const T dB = lerp(dB_at0, T(0), x);
         return decibelsToAmplitude(dB);
     }
     
