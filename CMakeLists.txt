@@ -22,7 +22,8 @@ endforeach()
 
 add_library(ath_dsp STATIC ${LIB_SOURCES})
 
+cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH ATH_DSP_INCLUDE_ROOT)
 target_include_directories(ath_dsp
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${ATH_DSP_INCLUDE_ROOT}
 )
