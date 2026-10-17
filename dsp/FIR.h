@@ -1,9 +1,11 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <vector>
-#include <algorithm>
+
+#include "../math/Math.h"
 
 namespace Ath::Dsp::Filter::Fir
 {
@@ -20,7 +22,7 @@ namespace Ath::Dsp::Filter::Fir
         if (N % 2 == 0) N -= 1;
         size_t M = N - 1;
 
-        const auto wc = (cutoff / sr) * std::numbers::pi * 2.0;
+        const auto wc = (cutoff / sr) * Math::pi<double> * 2.0;
 
         std::vector<double> coefficients(N);
 
@@ -39,7 +41,7 @@ namespace Ath::Dsp::Filter::Fir
             constexpr auto a3 = 0.0106411;
 
             const auto nm = static_cast<double>(n) /  static_cast<double>(M); 
-            const auto wx2 = nm * 2.0 * std::numbers::pi;
+            const auto wx2 = nm * 2.0 * Math::pi<double>;
             const auto wx4 = wx2 * 2.0;
             const auto wx6 = wx2 * 3.0;
 
